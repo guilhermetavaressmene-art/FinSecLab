@@ -1,0 +1,19 @@
+# Banco de Dados SQLite (Não subir dados reais para o GitHub)
+*.db
+*.sqlite
+*.sqlite3
+
+# Arquivos temporários e de compilação do Python
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Ambientes Virtuais
+venv/
+env/
+.venv/
+.env
+
+# Arquivos de Sistema Operacional (Mac/Windows)
+.DS_Store
+Thumbs.db
