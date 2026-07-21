@@ -67,3 +67,45 @@ def buscar_usuario_login(email):
         return dados[0]
     
     return None
+
+# TRANSAÇÕES
+def cadastrar_transacao(id_usuario, valor, tipo, descricao):
+    executar("""
+             INSERT INTO transacoes
+             (id_usuario, valor, tipo, descricao)
+             VALUES (?, ?, ?, ?)
+             """,
+             (id_usuario, valor, tipo, descricao))
+    
+def buscar_dados_transacao(id_transacao):
+    dados = executar_busca("""
+                   SELECT id_usuario, valor, tipo, descricao
+                   FROM transacoes
+                   WHERE id = ?
+                   """,
+                   (id_transacao,))
+    
+    if dados:
+        return dados[0]
+    
+    return None
+
+def buscar_saldo(id_usuario):
+    saldo = executar_busca("""
+                   SELECT SUM(
+                   CASE
+                           
+                        WHEN tipo = 'GANHO' THEN valor
+                        WHEN tipo = 'GASTO' THEN -valor
+                        ELSE 0
+                           
+                   END)
+                   FROM transacoes
+                   WHERE id_usuario = ?
+                   """,
+                   (id_usuario,))
+    
+    if saldo and saldo[0][0] is not None:
+        return float(saldo[0][0])
+    
+    return None

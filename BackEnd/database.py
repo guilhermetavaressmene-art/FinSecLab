@@ -1,6 +1,4 @@
 import sqlite3
-
-import sqlite3
 from pathlib import Path
 
 
@@ -42,7 +40,7 @@ def tabela_transacoes():
              id_usuario INTEGER NOT NULL,
              valor FLOAT NOT NULL,
              tipo TEXT NOT NULL,
-             descricao TEXT NOT NULL
+             descricao TEXT NOT NULL,
              
              FOREIGN KEY (id_usuario)
                 REFERENCES usuarios(id)
