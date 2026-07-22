@@ -1,13 +1,13 @@
 from werkzeug.security import generate_password_hash, check_password_hash
-import repositorio
+import repositorio_usuarios
 
 #VERIFICAÇÕES e VALIDAÇÕES
 def verificar_email(email):
-    if repositorio.buscar_por_email(email) is None:
+    if repositorio_usuarios.buscar_por_email(email) is None:
         raise ValueError("Usuário não encontrado.")
 
 def verificar_id(id_usuario):
-    if repositorio.buscar_por_id(id_usuario) is None:
+    if repositorio_usuarios.buscar_por_id(id_usuario) is None:
         raise ValueError("Email ou Senha incorretos.")
 
     return
@@ -50,24 +50,24 @@ def validar_senha(senha):
     return senha_normalizada
 
 
-#REGRAS DE NEGOCIO
+#REGRAS DE NEGÓCIO
 def cadastrar_usuario(username, email, senha):
         username_normalizado = validar_username(username)
         email_normalizado = validar_email(email)
         senha_normalizada = validar_senha(senha)
 
-        if repositorio.buscar_por_email(email_normalizado) is not None:
+        if repositorio_usuarios.buscar_por_email(email_normalizado) is not None:
             raise ValueError("Email ja cadastrado.")
         
         senha_criptografada = generate_password_hash(senha_normalizada)
 
-        repositorio.cadastrar_usuario(username_normalizado, email_normalizado, senha_criptografada)
+        repositorio_usuarios.cadastrar_usuario(username_normalizado, email_normalizado, senha_criptografada)
 
 def login_usuario(email, senha):
     email_digitado = validar_email(email)
     senha_normalizada = validar_senha(senha)
 
-    dados = repositorio.buscar_usuario_login(email_digitado)
+    dados = repositorio_usuarios.buscar_usuario_login(email_digitado)
 
     if dados is None:
         raise ValueError("Email ou Senha Incorretos.")
@@ -82,11 +82,11 @@ def login_usuario(email, senha):
 def buscar_user_email(email):
     verificar_email(email)
 
-    user_encontrado = repositorio.buscar_por_email(email)
+    user_encontrado = repositorio_usuarios.buscar_por_email(email)
     return user_encontrado[0]
 
 def buscar_user_id(id_usuario):
     verificar_id(id_usuario)
 
-    user_encontrado = repositorio.buscar_por_id(id_usuario)
+    user_encontrado = repositorio_usuarios.buscar_por_id(id_usuario)
     return user_encontrado[0]
