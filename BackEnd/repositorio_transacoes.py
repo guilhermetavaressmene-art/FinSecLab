@@ -74,3 +74,16 @@ def buscar_saldo(id_usuario):
         return float(saldo[0][0])
     
     return None
+
+def extrato(id_usuario):
+    extrato = executar_busca("""
+                             SELECT tipo, valor
+                             FROM transacoes
+                             WHERE id_usuario = ?
+                             """,
+                             (id_usuario,))
+    
+    if extrato:
+        return extrato
+    
+    return []

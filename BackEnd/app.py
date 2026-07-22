@@ -83,6 +83,38 @@ def cadastrar_transacao():
         erro = {"erro":str(error)}
 
         return jsonify(erro), 400
+    
+@app.route('/saldo/<int:id_usuario>', methods=['GET'])
+def mostrar_saldo(id_usuario):
+    try:
+        saldo = services_transacoes.consultar_saldo(id_usuario)
+
+        retorno = {
+            "usuário": id_usuario,
+            "saldo": saldo
+            }
+
+        return jsonify(retorno), 200
+    
+    except ValueError as error:
+        return jsonify({
+            "erro":str(error)
+            }), 400
+    
+@app.route("/extrato/<int:id_usuario>", methods=['GET'])
+def mostrar_extrato(id_usuario):
+    try:
+        extrato = services_transacoes.puxar_extrato(id_usuario)
+
+        retorno = {
+            "ID usuario": id_usuario,
+            "Extrato": extrato
+            }
+
+        return jsonify(retorno), 200
+    
+    except ValueError as error:
+        return jsonify(str(error)), 400
 
 
 if __name__ == '__main__':

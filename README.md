@@ -1,40 +1,39 @@
 # 🛡️ FinSec Lab
 
-Bem-vindo ao **FinSec Lab**, um projeto de sistema financeiro focado na construção de um Back-End robusto usando Python.
+## 📖 Sobre o Projeto
+O **FinSec Lab** é uma API RESTful desenvolvida em Python, projetada com um foco rigoroso em **Application Security (AppSec)** e **Clean Architecture**. O sistema simula o núcleo financeiro (Back-End) de uma aplicação bancária, permitindo o cadastro de usuários, autenticação segura, registro de transações financeiras e consulta de saldos.
 
-O objetivo principal deste laboratório não é apenas fazer o código funcionar, mas sim aplicar as melhores práticas de **Engenharia de Software** e **Segurança da Informação (AppSec)** desde a primeira linha de código.
+Este projeto é um laboratório prático de Engenharia de Software focado em construir um ambiente *Zero Trust* (Confiança Zero), blindado contra as principais vulnerabilidades da web (OWASP Top 10).
 
----
-
-## 🎯 Arquitetura e Padrões
-
-Este projeto foi desenhado utilizando os princípios de **Clean Architecture** (Arquitetura Limpa) e **Separation of Concerns** (Separação de Responsabilidades), dividindo o sistema em camadas isoladas:
-
-* **Database:** Configuração da base de dados e ativação de chaves estrangeiras.
-* **Repositório:** Camada isolada que comunica com a base de dados. Nenhuma outra camada conhece a linguagem SQL.
-* **Services (Regras de Negócio):** O cérebro da aplicação. Higieniza dados, valida regras de negócio e aplica camadas de segurança antes de permitir qualquer persistência.
+## 🏗️ Arquitetura (Clean Architecture)
+O projeto segue o princípio de Separação de Responsabilidades (*Separation of Concerns*), dividido em camadas claras:
+* **Camada de Roteamento (`app.py`):** Recebe requisições HTTP (JSON), gerencia os Status Codes e atua como a porta de entrada da API.
+* **Camada de Serviço (`services_*.py`):** O "cérebro" do sistema. Contém todas as regras de negócio, sanitização de dados e validações.
+* **Camada de Repositório (`repositorio_*.py`):** Abstrai e gerencia a comunicação exclusiva com o banco de dados.
+* **Banco de Dados (`database.py`):** Configuração, estruturação e criação das tabelas relacionais.
 
 ---
 
-## 🔐 Camada de Segurança (AppSec)
+## 🚧 Backlog do Produto (O que vamos construir)
 
-Neste projeto, a segurança não é uma reflexão tardia. As seguintes proteções foram implementadas nativamente:
+### 🔒 Segurança e Regras de Negócio Implementadas
+* **Cadastro de Usuários:** Validação estrita de formato de e-mail e limites de caracteres (*Defense in Depth*).
+* **Autenticação Segura:** Proteção contra ataques de dicionário e *Rainbow Tables* utilizando Hashing com Salt (via `werkzeug.security`). Senhas nunca são salvas em texto plano.
+* **Prevenção de Enumeração (User Enumeration):** O sistema não revela se um e-mail existe ou não no banco de dados durante tentativas de login falhas.
+* **Defesa contra SQL Injection (SQLi):** Todas as interações com o banco de dados utilizam queries parametrizadas (*bind parameters*).
+* **Processamento via SQL:** O cálculo do saldo final (Ganhos vs Gastos) é delegado ao motor nativo do banco de dados utilizando `SUM(CASE WHEN...)`.
+* **Respostas Padronizadas (HTTP Status Codes):** Retornos claros (`200`, `201`, `400`), evitando vazamento de informações da infraestrutura (*Information Disclosure*).
 
-* **Proteção contra SQL Injection (SQLi):** Uso exclusivo de *Parameterized Queries* no SQLite. O sistema impede que dados do utilizador sejam interpretados como comandos de execução.
-* **Hashing de Senhas com Salt:** As senhas não trafegam e não são guardadas em texto limpo. Utilização da biblioteca `werkzeug.security` (algoritmo *scrypt*) para gerar hashes irreversíveis, protegendo a base de dados contra fugas e ataques de *Rainbow Tables*.
-* **Prevenção contra User Enumeration:** Padronização das respostas genéricas de erro ("Email ou Senha incorretos") no serviço de login, impedindo que atacantes mapeiem quais emails estão registados.
-* **Defesa em Profundidade (Defense in Depth):** Verificações duplas de integridade (ex: duplicidade de email), feitas primeiramente nas regras de negócio (Services) e garantidas por *Constraints* (`UNIQUE`) na camada de base de dados.
+Para que o FinSec Lab se torne uma API de nível corporativo, as próximas implementações focarão em Identidade, Auditoria e Proteção de Infraestrutura.
 
----
+### 🔐 Identidade e Controle de Acesso (Zero Trust)
+* [ ] **Autenticação via JWT (JSON Web Tokens):** Substituir a confiança cega no Front-End por crachás digitais criptografados (Tokens) gerados no login.
+* [ ] **Middlewares de Proteção de Rota:** Decoradores customizados no Flask para bloquear rotas sensíveis caso não haja um Token válido no *Header* (`Authorization: Bearer <token>`).
+* [ ] **Correção de Broken Access Control (BAC):** A API deixará de aceitar o `id_usuario` no corpo (*body*) da requisição. A identidade será extraída exclusivamente do Token validado.
 
-## 🚀 Como executar o projeto
+### 💰 Novas Rotas Financeiras
+* [ ] **Endpoint de Saldo (`GET /saldo`):** Rota protegida que retorna o saldo atual do usuário autenticado.
+* [ ] **Endpoint de Extrato (`GET /extrato`):** Rota para listar o histórico de transações, implementando paginação para evitar sobrecarga no banco de dados.
 
-### Pré-requisitos
-* Python 3.x instalado.
-* Gestor de pacotes `pip`.
-
-### Instalação
-
-1. Clone este repositório:
-   ```bash
-   git clone [https://github.com/guilhermetavaressmene-art/FinSecLab.git](https://github.com/guilhermetavaressmene-art/FinSecLab.git)
+### 🛡️ Defesas Avançadas (AppSec)
+* [ ] **Rate Limiting:** Proteção contra ataques de Força Bruta no `/login`, limitando o número

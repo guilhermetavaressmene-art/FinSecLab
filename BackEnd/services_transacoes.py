@@ -57,3 +57,20 @@ def consultar_saldo(id_usuario):
         return 0.0
     
     return saldo
+
+def puxar_extrato(id_usuario):
+    verificar_usuario(id_usuario)
+
+    linhas_banco = repositorio_transacoes.extrato(id_usuario)
+
+    lista_formatada = []
+
+    for linha in linhas_banco:
+        transacoes_dit = {
+            "tipo": linha[0],
+            "valor": linha[1]
+        }
+
+        lista_formatada.append(transacoes_dit)
+
+    return lista_formatada
