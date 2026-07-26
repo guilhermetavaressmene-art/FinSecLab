@@ -1,8 +1,15 @@
+import os
 from flask import Flask, jsonify, request
-import database
-import services_usuario, services_transacoes
+from dotenv import load_dotenv
+import jwt
+import datetime
+import services_usuario, services_transacoes, database
+
+load_dotenv()
 
 app = Flask(__name__)
+
+app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')
 
 database.tabela_transacoes()
 database.tabela_usuarios()
@@ -43,14 +50,22 @@ def cadastrar_usuario():
 def login():
     try:
         dados = request.json
-
         email = dados.get('email')
         senha = dados.get('senha')
 
-        services_usuario.login_usuario(email, senha)
+        dados_completo = services_usuario.login_usuario(email, senha)
+        id_usuario, username = dados_completo
 
-        retorno = {"mensagem":"Login realizado!"}
+        payload = {
+            "id_usuario" : id_usuario,
+            "exp" : datetime.datetime.utcnow() + datetime.timedelta(hours=1)
+                   }
+        token_criptografado = jwt.encode(payload, app.config['SECRET_KEY'], algorithm="HS256")
 
+        retorno = {
+            "mensagem": "Login realizado com sucesso!",
+            "token": token_criptografado
+                   }
         return jsonify(retorno), 200
     
     except ValueError as error:
