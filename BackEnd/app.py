@@ -52,7 +52,7 @@ def inicio():
 
 #ROTAS USUARIOS
 
-@app.route('/cadatrar', methods=['POST'])
+@app.route('/cadastrar', methods=['POST'])
 def cadastrar_usuario():
     try:
         #Dados Front-End
@@ -108,11 +108,11 @@ def login():
 #ROTAS TRANSAÇÕES
     
 @app.route('/transacao', methods=['POST'])
-def cadastrar_transacao():
+@token_obrigatorio
+def cadastrar_transacao(id_usuario):
     try:
         dados = request.json
 
-        id_usuario = dados.get('id_usuario')
         valor = dados.get('valor')
         tipo = dados.get('tipo')
         descricao = dados.get('descricao')
