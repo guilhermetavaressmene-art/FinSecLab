@@ -1,39 +1,69 @@
-# 🛡️ FinSec Lab
+# 🛡️ FinSecLab
 
-## 📖 Sobre o Projeto
-O **FinSec Lab** é uma API RESTful desenvolvida em Python, projetada com um foco rigoroso em **Application Security (AppSec)** e **Clean Architecture**. O sistema simula o núcleo financeiro (Back-End) de uma aplicação bancária, permitindo o cadastro de usuários, autenticação segura, registro de transações financeiras e consulta de saldos.
+**FinSecLab** é uma aplicação web financeira projetada com foco absoluto em **Arquitetura de Software** e **Segurança da Informação (AppSec)**. 
 
-Este projeto é um laboratório prático de Engenharia de Software focado em construir um ambiente *Zero Trust* (Confiança Zero), blindado contra as principais vulnerabilidades da web (OWASP Top 10).
-
-## 🏗️ Arquitetura (Clean Architecture)
-O projeto segue o princípio de Separação de Responsabilidades (*Separation of Concerns*), dividido em camadas claras:
-* **Camada de Roteamento (`app.py`):** Recebe requisições HTTP (JSON), gerencia os Status Codes e atua como a porta de entrada da API.
-* **Camada de Serviço (`services_*.py`):** O "cérebro" do sistema. Contém todas as regras de negócio, sanitização de dados e validações.
-* **Camada de Repositório (`repositorio_*.py`):** Abstrai e gerencia a comunicação exclusiva com o banco de dados.
-* **Banco de Dados (`database.py`):** Configuração, estruturação e criação das tabelas relacionais.
+O projeto adota uma arquitetura desacoplada (API RESTful + Single Page Application) e implementa defesas rigorosas contra vulnerabilidades clássicas mapeadas pela OWASP, servindo como um laboratório prático de desenvolvimento seguro.
 
 ---
 
-## 🚧 Backlog do Produto (O que vamos construir)
+## 🏗️ Arquitetura do Projeto
 
-### 🔒 Segurança e Regras de Negócio Implementadas
-* **Cadastro de Usuários:** Validação estrita de formato de e-mail e limites de caracteres (*Defense in Depth*).
-* **Autenticação Segura:** Proteção contra ataques de dicionário e *Rainbow Tables* utilizando Hashing com Salt (via `werkzeug.security`). Senhas nunca são salvas em texto plano.
-* **Prevenção de Enumeração (User Enumeration):** O sistema não revela se um e-mail existe ou não no banco de dados durante tentativas de login falhas.
-* **Defesa contra SQL Injection (SQLi):** Todas as interações com o banco de dados utilizam queries parametrizadas (*bind parameters*).
-* **Processamento via SQL:** O cálculo do saldo final (Ganhos vs Gastos) é delegado ao motor nativo do banco de dados utilizando `SUM(CASE WHEN...)`.
-* **Respostas Padronizadas (HTTP Status Codes):** Retornos claros (`200`, `201`, `400`), evitando vazamento de informações da infraestrutura (*Information Disclosure*).
+O sistema é dividido em duas grandes peças que se comunicam via JSON (CORS habilitado):
 
-Para que o FinSec Lab se torne uma API de nível corporativo, as próximas implementações focarão em Identidade, Auditoria e Proteção de Infraestrutura.
+1. **Front-End (SPA):** Construído com Vanilla JavaScript, HTML5 e Tailwind CSS. Gerencia o estado da aplicação, roteamento visual e armazenamento seguro do Token JWT no lado do cliente.
+2. **Back-End (API):** Construído em Python com Flask. Estruturado no padrão de camadas (Responsabilidade Única) para facilitar testes, manutenção e auditorias:
+   - **Rotas (`app.py`):** Controlers que recebem a requisição, validam o Token e devolvem JSON.
+   - **Services (`services_*.py`):** Camada de regras de negócio, sanitização e validação de dados.
+   - **Repositórios (`repositorio_*.py`):** Camada de abstração de persistência (Data Access Object).
+   - **Database (`database.py`):** Configuração e integridade referencial do banco.
 
-### 🔐 Identidade e Controle de Acesso (Zero Trust)
-* [ ] **Autenticação via JWT (JSON Web Tokens):** Substituir a confiança cega no Front-End por crachás digitais criptografados (Tokens) gerados no login.
-* [ ] **Middlewares de Proteção de Rota:** Decoradores customizados no Flask para bloquear rotas sensíveis caso não haja um Token válido no *Header* (`Authorization: Bearer <token>`).
-* [ ] **Correção de Broken Access Control (BAC):** A API deixará de aceitar o `id_usuario` no corpo (*body*) da requisição. A identidade será extraída exclusivamente do Token validado.
+---
 
-### 💰 Novas Rotas Financeiras
-* [ ] **Endpoint de Saldo (`GET /saldo`):** Rota protegida que retorna o saldo atual do usuário autenticado.
-* [ ] **Endpoint de Extrato (`GET /extrato`):** Rota para listar o histórico de transações, implementando paginação para evitar sobrecarga no banco de dados.
+## 🔒 Destaques de AppSec (Security by Design)
 
-### 🛡️ Defesas Avançadas (AppSec)
-* [ ] **Rate Limiting:** Proteção contra ataques de Força Bruta no `/login`, limitando o número
+Este projeto foi construído assumindo que o ambiente externo é hostil. As seguintes defesas foram implementadas:
+
+* **Mitigação de IDOR (Insecure Direct Object Reference):** A API adota *Zero Trust* em relação aos payloads do Front-End. O `id_usuario` para transações e extratos é extraído criptograficamente do payload do **Token JWT**, impedindo que um usuário forje ações em nome de terceiros.
+* **Autenticação Stateless (JWT):** Geração e validação de Tokens JWT assinados com chave simétrica (`HS256`) isolada em variáveis de ambiente (`.env`).
+* **Proteção contra User Enumeration:** Respostas padronizadas no fluxo de autenticação ("Email ou Senha Incorretos") para mitigar ataques de força bruta focados em descoberta de contas.
+* **Blindagem contra SQL Injection:** Uso estrito de *Parameterized Queries* (`?`) no SQLite3.
+* **Otimização de Banco de Dados (Defesa contra DoS):** Implementação de consultas relacionais complexas (`INNER JOIN`) para eliminar o problema de *N+1 Queries*, reduzindo a carga no servidor durante requisições de extrato.
+* **Armazenamento Seguro de Credenciais:** Senhas são submetidas a *salt* e *hash* usando a biblioteca `werkzeug.security` (PBKDF2) antes da persistência.
+
+---
+
+## 🚀 Tecnologias Utilizadas
+
+**Back-End:**
+* Python 3
+* Flask & Flask-CORS
+* PyJWT (JSON Web Tokens)
+* Werkzeug (Security)
+* SQLite3 (com `PRAGMA foreign_keys = ON`)
+
+**Front-End:**
+* HTML5 / CSS3
+* Vanilla JavaScript (Fetch API, DOM Manipulation)
+* Tailwind CSS (via CDN)
+
+---
+
+## ⚙️ Como Executar Localmente
+
+### 1. Configurando o Back-End
+Abra o terminal na raiz do projeto e crie o ambiente virtual:
+
+```bash
+# Crie e ative o ambiente virtual
+python -m venv venv
+source venv/Scripts/activate  # No Windows
+
+# Instale as dependências (certifique-se de ter gerado o requirements.txt)
+pip install Flask python-dotenv PyJWT Werkzeug flask-cors
+
+# Configure as variáveis de ambiente
+# Crie um arquivo .env na raiz e adicione:
+# SECRET_KEY=sua_chave_secreta_super_segura_aqui
+
+# Inicie a API
+python BackEnd/app.py

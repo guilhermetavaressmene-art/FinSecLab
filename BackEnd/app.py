@@ -13,8 +13,8 @@ app = Flask(__name__)
 CORS(app)
 app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')
 
-database.tabela_transacoes()
 database.tabela_usuarios()
+database.tabela_transacoes()
 
 def token_obrigatorio(funcao):
     @wraps(funcao)
