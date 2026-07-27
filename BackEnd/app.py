@@ -1,6 +1,7 @@
 import os
 from flask import Flask, jsonify, request
 from dotenv import load_dotenv
+from functools import wraps
 import jwt
 import datetime
 import services_usuario, services_transacoes, database
@@ -14,6 +15,35 @@ app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')
 database.tabela_transacoes()
 database.tabela_usuarios()
 
+def token_obrigatorio(funcao):
+    @wraps(funcao)
+
+    def decorated(*args, **kwargs):
+        if 'Authorization' in request.headers:
+            auth_header = request.headers['Authorization']
+
+            if auth_header.startswith('Bearer '):
+                token = auth_header.split(' ')[1]
+
+            else:
+                token = auth_header
+
+        if not token:
+            return jsonify({"erro": "Token de acesso não fornecido!"}), 401
+
+        try:
+            dados = jwt.decode(token, app.config['SECRET_KEY'], algorithms=["HS256"])
+            id_usuario_logado = dados['id_usuario']
+
+        except jwt.ExpiredSignatureError:
+            return jsonify({"erro": "Seu Token expirou. Faça login novamente!"}), 401
+        except jwt.InvalidTokenError:
+            return jsonify({"erro": "Token inválido ou adulterado!"}), 401
+
+        return funcao(id_usuario_logado, *args, **kwargs)
+
+    return decorated
+
 @app.route('/finseclab', methods=['GET'])
 def inicio():
     boas_vindas = {"mensagem":"Seja Bem-Vindo ao FinSecLab."}
@@ -22,55 +52,57 @@ def inicio():
 
 #ROTAS USUARIOS
 
-@app.route('/usuarios', methods=['POST'])
+@app.route('/cadatrar', methods=['POST'])
 def cadastrar_usuario():
     try:
-        dados = request.json
+        #Dados Front-End
+        username_email_senha = request.json
+        username = username_email_senha.get('username')
+        email = username_email_senha.get('email')
+        senha = username_email_senha.get('senha')
 
-        username = dados.get('username')
-        email = dados.get('email')
-        senha = dados.get('senha')
+        #Cadastro Banco De Dados (Com segurança)
+        services_usuario.cadastrar_usuario(username, email, senha)
 
-        services_usuario.cadastrar_usuario(
-                    username,
-                    email,
-                    senha
-                )
-
-        retorno = {"mensagem":"Usuário cadastrado com sucesso!"}
-
+        #Retorno Back-End
+        retorno = {
+            "mensagem": "Usuário cadastrado!"
+        }
         return jsonify(retorno), 201
 
-    except ValueError as erro:
-        error = {"erro":str(erro)}
-
-        return jsonify(error), 400
+    except ValueError as error:
+        erro = {"erro": str(error)}
+        return jsonify(erro), 400
     
 @app.route('/login', methods=['POST'])
 def login():
     try:
-        dados = request.json
-        email = dados.get('email')
-        senha = dados.get('senha')
+        #Dados Front-End
+        email_e_senha = request.json
+        email = email_e_senha.get('email')
+        senha = email_e_senha.get('senha')
 
-        dados_completo = services_usuario.login_usuario(email, senha)
-        id_usuario, username = dados_completo
+        #Dados Banco de Dados
+        dados_usuario = services_usuario.login_usuario(email, senha)
+        id_usuario, username = dados_usuario
 
+        #Aplicação de Segurança
         payload = {
-            "id_usuario" : id_usuario,
-            "exp" : datetime.datetime.utcnow() + datetime.timedelta(hours=1)
-                   }
+            "id_usuario": id_usuario,
+            "exp": (datetime.datetime.utcnow() + datetime.timedelta(hours=1))
+        }
         token_criptografado = jwt.encode(payload, app.config['SECRET_KEY'], algorithm="HS256")
 
+        #Retorno do Back-End
         retorno = {
-            "mensagem": "Login realizado com sucesso!",
+            "mensagem": "Login realizado.",
             "token": token_criptografado
-                   }
-        return jsonify(retorno), 200
-    
-    except ValueError as error:
-        erro = {"erro":str(error)}
+        }
+        return jsonify(retorno), 201
 
+    #Tratação de Erros
+    except ValueError as error:
+        erro = {"erro": str(error)}
         return jsonify(erro), 400
 
 #ROTAS TRANSAÇÕES
@@ -96,19 +128,19 @@ def cadastrar_transacao():
         
     except ValueError as error:
         erro = {"erro":str(error)}
-
         return jsonify(erro), 400
     
-@app.route('/saldo/<int:id_usuario>', methods=['GET'])
-def mostrar_saldo(id_usuario):
+@app.route('/saldo', methods=['GET'])
+@token_obrigatorio
+def mostrar_saldo(id_usuario_logado):
     try:
-        saldo = services_transacoes.consultar_saldo(id_usuario)
+        saldo = services_transacoes.consultar_saldo(id_usuario_logado)
 
+        #Retorno Back-End
         retorno = {
-            "usuário": id_usuario,
+            "id_usuario": id_usuario_logado,
             "saldo": saldo
             }
-
         return jsonify(retorno), 200
     
     except ValueError as error:
@@ -116,16 +148,17 @@ def mostrar_saldo(id_usuario):
             "erro":str(error)
             }), 400
     
-@app.route("/extrato/<int:id_usuario>", methods=['GET'])
-def mostrar_extrato(id_usuario):
+@app.route("/extrato", methods=['GET'])
+@token_obrigatorio
+def mostrar_extrato(id_usuario_logado):
     try:
-        extrato = services_transacoes.puxar_extrato(id_usuario)
+        lista_extrato = services_transacoes.puxar_extrato(id_usuario_logado)
 
+        #Retorno Back-End
         retorno = {
-            "ID usuario": id_usuario,
-            "Extrato": extrato
+            "id_usuario": id_usuario_logado,
+            "extrato": lista_extrato
             }
-
         return jsonify(retorno), 200
     
     except ValueError as error:

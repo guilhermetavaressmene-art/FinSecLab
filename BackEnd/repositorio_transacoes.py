@@ -44,9 +44,10 @@ def cadastrar_transacao(id_usuario, valor, tipo, descricao):
     
 def buscar_dados_transacao(id_transacao):
     dados = executar_busca("""
-                   SELECT id_usuario, valor, tipo, descricao
+                   SELECT usuarios.email, transacoes.valor, transacoes.tipo, transacoes.descricao
                    FROM transacoes
-                   WHERE id = ?
+                   INNER JOIN usuarios ON usuarios.id = transacoes.id_usuario
+                   WHERE transacoes.id = ?
                    """,
                    (id_transacao,))
     
@@ -77,9 +78,10 @@ def buscar_saldo(id_usuario):
 
 def extrato(id_usuario):
     extrato = executar_busca("""
-                             SELECT tipo, valor
+                             SELECT usuarios.username, transacoes.tipo, transacoes.valor, transacoes.descricao
                              FROM transacoes
-                             WHERE id_usuario = ?
+                             INNER JOIN usuarios ON usuarios.id = transacoes.id_usuario
+                             WHERE transacoes.id_usuario = ?
                              """,
                              (id_usuario,))
     

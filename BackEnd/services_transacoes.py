@@ -67,8 +67,8 @@ def puxar_extrato(id_usuario):
 
     for linha in linhas_banco:
         transacoes_dit = {
-            "tipo": linha[0],
-            "valor": linha[1]
+            "tipo": linha[1],
+            "valor": linha[2]
         }
 
         lista_formatada.append(transacoes_dit)
