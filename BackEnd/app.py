@@ -1,15 +1,16 @@
-import os
 from flask import Flask, jsonify, request
 from dotenv import load_dotenv
 from functools import wraps
 import jwt
 import datetime
 import services_usuario, services_transacoes, database
+import os
+from flask import Flask, jsonify, request
+from flask_cors import CORS
 
 load_dotenv()
-
 app = Flask(__name__)
-
+CORS(app)
 app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')
 
 database.tabela_transacoes()
