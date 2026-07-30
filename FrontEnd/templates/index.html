@@ -4,9 +4,10 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>FinSec Lab — Acesso</title>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css"></script>
+<script src="https://cdn.tailwindcss.com"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
 <style>
   :root{
     --ink:#0B1120;
@@ -32,32 +33,6 @@
 
   .hidden{display:none !important;}
 
-  /* ===== Suas classes originais, preservadas ===== */
-  .input-padrao{
-    display:block;width:100%;padding:0.75rem 1rem;
-    background-color:#f8fafc;border:1px solid #e2e8f0;
-    border-radius:0.75rem;color:#334155;
-    transition:all 0.2s ease-in-out;outline:none;
-  }
-  .input-padrao:focus{
-    background-color:#ffffff;border-color:#6366f1;
-    box-shadow:0 0 0 4px rgba(99,102,241,0.1);
-  }
-  .btn-primary{
-    background-color:#4f46e5;color:white;padding:0.75rem 1rem;
-    border-radius:0.75rem;font-weight:600;
-    transition:all 0.2s ease-in-out;border:none;cursor:pointer;width:100%;
-  }
-  .btn-primary:hover{background-color:#4338ca;transform:translateY(-1px);}
-  .btn-success{
-    background-color:#059669;color:white;padding:0.75rem 1rem;
-    border-radius:0.75rem;font-weight:600;
-    transition:all 0.2s ease-in-out;border:none;cursor:pointer;width:100%;
-  }
-  .btn-success:hover{background-color:#047857;transform:translateY(-1px);}
-  .fade-in{animation:fadeIn 0.5s ease-out forwards;}
-  @keyframes fadeIn{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:translateY(0);}}
-
   /* ===== Layout novo ===== */
   #auth-section{
     min-height:100vh;
@@ -82,7 +57,6 @@
     justify-content:space-between;
     min-height:340px;
   }
-  /* linhas de "ledger" no fundo, sutis */
   .brand-panel::before{
     content:'';
     position:absolute; inset:0;
@@ -114,7 +88,7 @@
     line-height:1.6;
   }
 
-  /* Elemento-assinatura: pulso Zero Trust */
+  /* Pulso Zero Trust */
   .pulse-wrap{
     display:flex; align-items:center; gap:0.85rem;
     margin-top:2.4rem;
@@ -143,7 +117,7 @@
   .pulse-label .status{color:var(--amber); font-weight:500;}
   .pulse-label .sub{color:var(--mist); display:block; margin-top:2px; font-size:0.68rem;}
 
-  /* Rodapé / crédito do fundador */
+  /* Rodapé */
   .founder-credit{
     position:relative; z-index:1;
     padding-top:1.8rem; margin-top:1.8rem;
@@ -160,7 +134,7 @@
   .founder-name{font-size:0.85rem; color:#F1F5F9; font-weight:500;}
   .founder-role{font-family:'JetBrains Mono',monospace; font-size:0.68rem; color:var(--mist); margin-top:1px;}
 
-  /* Painel de formulário */
+  /* Formulário */
   .form-panel{
     background:var(--paper);
     display:flex; align-items:center; justify-content:center;
@@ -184,116 +158,163 @@
   .form-sub{font-size:0.85rem; color:#64748B; margin-bottom:1.6rem;}
 </style>
 </head>
-<body>
+<body class="bg-slate-50 text-slate-800 font-sans min-h-screen flex flex-col antialiased">
 
-<div id="auth-section">
+  <div id="toast" class="toast-hidden fixed top-5 right-5 shadow-lg rounded-lg p-4 border-l-4 z-50">
+    <p id="toast-msg" class="font-semibold"></p>
+  </div>
 
-  <!-- ===== PAINEL DE MARCA ===== -->
-  <div class="brand-panel">
-    <div>
-      <span class="eyebrow">// Engenharia Financeira Defensiva</span>
-      <h1 class="wordmark font-display font-bold">Fin<span>Sec</span> Lab</h1>
-      <p class="welcome-copy">
-        Um sistema construído sob a premissa de que todo pedido pode ser hostil.
-        Cada saldo, cada transação e cada sessão validados na camada de serviço —
-        não por convenção, por arquitetura.
-      </p>
-
-      <div class="pulse-wrap">
-        <div class="radar">
-          <div class="ring"></div>
-          <div class="ring"></div>
-          <div class="dot"></div>
-        </div>
-        <div class="pulse-label">
-          <span class="status">ZERO TRUST · ATIVO</span>
-          <span class="sub">validando token em cada requisição</span>
-        </div>
-      </div>
-    </div>
-
-    <div class="founder-credit">
-      <div class="founder-avatar">GT</div>
+  <main id="auth-section">
+    <div class="brand-panel">
       <div>
-        <div class="founder-name">Guilherme Tavares</div>
-        <div class="founder-role">Fundador — Backend &amp; AppSec</div>
+        <span class="eyebrow">// Engenharia Financeira Defensiva</span>
+        <h1 class="wordmark font-display font-bold">Fin<span>Sec</span> Lab</h1>
+        <p class="welcome-copy">
+          Um sistema construído sob a premissa de que todo pedido pode ser hostil.
+          Cada saldo, cada transação e cada sessão validados na camada de serviço —
+          não por convenção, por arquitetura.
+        </p>
+        <div class="pulse-wrap">
+          <div class="radar">
+            <div class="ring"></div><div class="ring"></div><div class="dot"></div>
+          </div>
+          <div class="pulse-label">
+            <span class="status">ZERO TRUST · ATIVO</span>
+            <span class="sub">validando token em cada requisição</span>
+          </div>
+        </div>
+      </div>
+      <div class="founder-credit">
+        <div class="founder-avatar">GT</div>
+        <div>
+          <div class="founder-name">Guilherme Tavares</div>
+          <div class="founder-role">Fundador — Backend &amp; AppSec</div>
+        </div>
       </div>
     </div>
-  </div>
 
-  <!-- ===== PAINEL DE FORMULÁRIO ===== -->
-  <div class="form-panel">
-    <div class="form-card fade-in">
+    <div class="form-panel">
+      <div class="form-card fade-in">
+        <div class="tab-switch">
+          <button type="button" class="tab-btn active" onclick="mostrarAba('login')">Entrar</button>
+          <button type="button" class="tab-btn" onclick="mostrarAba('cadastro')">Criar conta</button>
+        </div>
 
-      <div class="tab-switch">
-        <button type="button" class="tab-btn active" onclick="mostrarAba('login')">Entrar</button>
-        <button type="button" class="tab-btn" onclick="mostrarAba('cadastro')">Criar conta</button>
+        <form id="login-form">
+          <h2 class="form-title">Acesse sua conta</h2>
+          <p class="form-sub">Autentique-se para ver seu saldo e extrato.</p>
+          <div class="field-group">
+            <label class="field-label" for="login-email">E-mail</label>
+            <input class="input-padrao" type="email" id="login-email" placeholder="voce@email.com" required>
+          </div>
+          <div class="field-group">
+            <label class="field-label" for="login-senha">Senha</label>
+            <input class="input-padrao" type="password" id="login-senha" placeholder="••••••••" required>
+          </div>
+          <button type="submit" class="btn-primary w-full">Entrar</button>
+        </form>
+
+        <form id="register-form" class="hidden">
+          <h2 class="form-title">Crie sua conta</h2>
+          <p class="form-sub">Leva menos de um minuto.</p>
+          <div class="field-group">
+            <label class="field-label" for="reg-username">Nome de usuário</label>
+            <input class="input-padrao" type="text" id="reg-username" placeholder="seu_usuario" required>
+          </div>
+          <div class="field-group">
+            <label class="field-label" for="reg-email">E-mail</label>
+            <input class="input-padrao" type="email" id="reg-email" placeholder="voce@email.com" required>
+          </div>
+          <div class="field-group">
+            <label class="field-label" for="reg-senha">Senha</label>
+            <input class="input-padrao" type="password" id="reg-senha" placeholder="••••••••" required>
+          </div>
+          <button type="submit" class="btn-success w-full">Criar conta</button>
+        </form>
       </div>
-
-      <!-- LOGIN -->
-      <form id="login-form">
-        <h2 class="form-title">Acesse sua conta</h2>
-        <p class="form-sub">Autentique-se para ver seu saldo e extrato.</p>
-
-        <div class="field-group">
-          <label class="field-label" for="login-email">E-mail</label>
-          <input class="input-padrao" type="email" id="login-email" placeholder="voce@email.com" required>
-        </div>
-        <div class="field-group">
-          <label class="field-label" for="login-senha">Senha</label>
-          <input class="input-padrao" type="password" id="login-senha" placeholder="••••••••" required>
-        </div>
-        <button type="submit" class="btn-primary">Entrar</button>
-      </form>
-
-      <!-- CADASTRO -->
-      <form id="register-form" class="hidden">
-        <h2 class="form-title">Crie sua conta</h2>
-        <p class="form-sub">Leva menos de um minuto.</p>
-
-        <div class="field-group">
-          <label class="field-label" for="reg-username">Nome de usuário</label>
-          <input class="input-padrao" type="text" id="reg-username" placeholder="seu_usuario" required>
-        </div>
-        <div class="field-group">
-          <label class="field-label" for="reg-email">E-mail</label>
-          <input class="input-padrao" type="email" id="reg-email" placeholder="voce@email.com" required>
-        </div>
-        <div class="field-group">
-          <label class="field-label" for="reg-senha">Senha</label>
-          <input class="input-padrao" type="password" id="reg-senha" placeholder="••••••••" required>
-        </div>
-        <button type="submit" class="btn-success">Criar conta</button>
-      </form>
-
     </div>
-  </div>
+  </main>
 
-</div>
+  <main id="dashboard-section" class="hidden flex-grow flex flex-col fade-in">
+    <header class="bg-white shadow-sm border-b border-slate-200 p-4 sticky top-0 z-40">
+        <div class="max-w-6xl mx-auto flex justify-between items-center">
+            <h1 class="text-2xl font-extrabold text-indigo-600 tracking-tight">FinSecLab</h1>
+            <button onclick="logout()" class="text-sm bg-slate-100 hover:bg-slate-200 text-slate-700 py-2 px-4 rounded-lg font-semibold transition-colors duration-200">Sair da Conta</button>
+        </div>
+    </header>
 
-<!-- Toast (sua estrutura original) -->
-<div id="toast" class="fixed top-5 right-5 shadow-xl rounded-xl p-4 border-l-4 z-50 toast-hidden">
-  <p id="toast-msg" class="text-sm font-medium"></p>
-</div>
+    <div class="max-w-6xl mx-auto w-full p-6 grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div class="space-y-8 col-span-1">
+            <div class="bg-gradient-to-br from-indigo-600 via-indigo-700 to-purple-800 p-8 rounded-3xl shadow-xl text-white relative overflow-hidden">
+                <div class="relative z-10">
+                    <h2 class="text-indigo-200 font-semibold text-xs uppercase tracking-widest mb-1">Saldo Disponível</h2>
+                    <p class="text-4xl font-black mt-1 tracking-tight" id="saldo-display">R$ 0,00</p>
+                </div>
+                <div class="absolute -bottom-6 -right-6 w-32 h-32 bg-white opacity-10 rounded-full blur-2xl"></div>
+            </div>
 
-<script>
-  // Apenas para o preview: alterna as abas visualmente (equivalente ao seu toggleAuth)
-  function mostrarAba(qual){
-    const loginForm = document.getElementById('login-form');
-    const regForm = document.getElementById('register-form');
-    const tabs = document.querySelectorAll('.tab-btn');
-    tabs.forEach(t => t.classList.remove('active'));
+            <div class="bg-white p-6 rounded-3xl shadow-sm border border-slate-100">
+                <h3 class="font-bold text-xl text-slate-800 mb-5">Nova Movimentação</h3>
+                <form id="transacao-form" class="space-y-4">
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-500 uppercase">Descrição</label>
+                        <input type="text" id="trans-desc" required placeholder="Ex: Salário" class="input-padrao mt-1">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-500 uppercase">Valor (R$)</label>
+                        <input type="number" id="trans-valor" step="0.01" min="0.01" required placeholder="0,00" class="input-padrao mt-1">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-500 uppercase">Tipo</label>
+                        <select id="trans-tipo" class="input-padrao mt-1 bg-white">
+                            <option value="GANHO">Receita (+)</option>
+                            <option value="GASTO">Despesa (-)</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="btn-primary w-full mt-2">Registrar</button>
+                </form>
+            </div>
+        </div>
 
-    if(qual === 'login'){
-      loginForm.classList.remove('hidden');
-      regForm.classList.add('hidden');
-      tabs[0].classList.add('active');
-    } else {
-      loginForm.classList.add('hidden');
-      regForm.classList.remove('hidden');
-      tabs[1].classList.add('active');
+        <div class="col-span-1 lg:col-span-2 bg-white p-8 rounded-3xl shadow-sm border border-slate-100 flex flex-col">
+            <h3 class="font-bold text-xl text-slate-800 mb-6">Últimas Transações</h3>
+            <div class="overflow-x-auto flex-grow">
+                <table class="w-full text-left border-collapse">
+                    <thead>
+                        <tr class="border-b-2 border-slate-100 text-xs text-slate-400 uppercase tracking-wider">
+                            <th class="pb-4 font-semibold w-1/2">Descrição</th>
+                            <th class="pb-4 font-semibold text-center">Tipo</th>
+                            <th class="pb-4 font-semibold text-right">Valor</th>
+                        </tr>
+                    </thead>
+                    <tbody id="extrato-body" class="text-sm divide-y divide-slate-50">
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+  </main>
+
+  <script>
+    // Mantendo a sua função visual de trocar abas
+    function mostrarAba(qual){
+      const loginForm = document.getElementById('login-form');
+      const regForm = document.getElementById('register-form');
+      const tabs = document.querySelectorAll('.tab-btn');
+      tabs.forEach(t => t.classList.remove('active'));
+
+      if(qual === 'login'){
+        loginForm.classList.remove('hidden');
+        regForm.classList.add('hidden');
+        tabs[0].classList.add('active');
+      } else {
+        loginForm.classList.add('hidden');
+        regForm.classList.remove('hidden');
+        tabs[1].classList.add('active');
+      }
     }
-  }
-</script>
+  </script>
+  
+  <script src="app.js"></script>
 </body>
 </html>
