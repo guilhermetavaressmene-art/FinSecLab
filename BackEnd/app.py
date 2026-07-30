@@ -15,7 +15,7 @@ load_dotenv(caminho_env)
 app = Flask(__name__, static_folder='../FrontEnd/templates', static_url_path='')
 CORS(app)
 
-app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')
+app.config['SECRET_KEY'] = os.getenv('SECRET_KEY', 'chave_secreta_de_emergencia_123')
 
 
 database.tabela_usuarios()
@@ -103,7 +103,11 @@ def login():
         }
         token_criptografado = jwt.encode(payload, app.config['SECRET_KEY'], algorithm="HS256")
 
-        #Retorno do Back-End
+        # FIX: Se o PythonAnywhere gerar em Bytes, converte para String!
+        if isinstance(token_criptografado, bytes):
+            token_criptografado = token_criptografado.decode('utf-8')
+
+        # Retorno do Back-End
         retorno = {
             "mensagem": "Login realizado.",
             "token": token_criptografado
