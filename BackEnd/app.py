@@ -8,10 +8,15 @@ import os
 from flask import Flask, jsonify, request
 from flask_cors import CORS
 
-load_dotenv()
+pasta_backend = os.path.dirname(os.path.abspath(__file__))
+caminho_env = os.path.join(pasta_backend, '..', '.env')
+load_dotenv(caminho_env)
+
 app = Flask(__name__, static_folder='../FrontEnd/templates', static_url_path='')
 CORS(app)
+
 app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')
+
 
 database.tabela_usuarios()
 database.tabela_transacoes()
