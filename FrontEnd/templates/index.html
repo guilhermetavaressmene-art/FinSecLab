@@ -93,10 +93,20 @@
   .pulse-label{font-family:'JetBrains Mono',monospace; font-size:0.72rem; letter-spacing:0.05em;}
   .pulse-label .status{color:var(--amber); font-weight:500;}
   .pulse-label .sub{color:var(--mist); display:block; margin-top:2px; font-size:0.68rem;}
+  
+  /* CRÉDITO DO FUNDADOR (ATUALIZADO PARA IMAGEM) */
   .founder-credit{position:relative; z-index:1; padding-top:1.8rem; margin-top:1.8rem; border-top:1px solid var(--line); display:flex; align-items:center; gap:0.7rem;}
-  .founder-avatar{width:34px; height:34px; border-radius:50%; background:linear-gradient(135deg, var(--indigo), var(--indigo-glow)); display:flex; align-items:center; justify-content:center; font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:0.85rem; color:white; flex-shrink:0;}
+  .founder-avatar{
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    object-fit: cover;
+    flex-shrink: 0;
+    border: 1.5px solid rgba(129,140,248,0.4);
+  }
   .founder-name{font-size:0.85rem; color:#F1F5F9; font-weight:500;}
   .founder-role{font-family:'JetBrains Mono',monospace; font-size:0.68rem; color:var(--mist); margin-top:1px;}
+  
   .form-panel{background:var(--paper); display:flex; align-items:center; justify-content:center; padding:3rem 2rem;}
   .form-card{width:100%; max-width:380px;}
   .tab-switch{display:flex; background:#EEF2FF; border-radius:0.75rem; padding:4px; margin-bottom:1.75rem;}
@@ -163,13 +173,15 @@
           </div>
         </div>
       </div>
+      
       <div class="founder-credit">
-        <div class="founder-avatar">GT</div>
+        <img src="assets/img/guilherme.jpg" alt="Guilherme Tavares" class="founder-avatar">
         <div>
           <div class="founder-name">Guilherme Tavares</div>
           <div class="founder-role">Fundador — Backend &amp; AppSec</div>
         </div>
       </div>
+      
     </div>
 
     <div class="form-panel">
