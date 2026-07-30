@@ -66,3 +66,65 @@
     from { opacity: 0; transform: translateY(10px); }
     to { opacity: 1; transform: translateY(0); }
 }
+/* ===== Notificações (toast) — apenas visual, JS intocado ===== */
+#toast{
+  min-width: 320px;
+  max-width: 400px;
+  display: flex;
+  align-items: flex-start;
+  gap: 0.85rem;
+  padding: 1.1rem 1.25rem !important;
+  border-radius: 1rem !important;
+  border-left: none !important;
+  background: #fff !important;
+  box-shadow: 0 20px 40px -12px rgba(15,23,42,0.22), 0 0 0 1px rgba(15,23,42,0.04) !important;
+  overflow: hidden;
+}
+
+/* barra de progresso — some no mesmo tempo do setTimeout(4000) do app.js */
+#toast::after{
+  content: '';
+  position: absolute;
+  left: 0; bottom: 0;
+  height: 3px; width: 100%;
+  background: currentColor;
+  opacity: 0.3;
+}
+#toast.toast-visible::after{
+  animation: toastShrink 4s linear forwards;
+}
+@keyframes toastShrink{
+  from{ width: 100%; }
+  to{ width: 0%; }
+}
+
+/* ícone circular, cor conforme a classe que o JS já aplica */
+#toast::before{
+  flex-shrink: 0;
+  width: 26px; height: 26px;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.8rem; font-weight: 700;
+  margin-top: 1px;
+}
+#toast.bg-emerald-50::before{ content: '✓'; background: #059669; color: #fff; }
+#toast.bg-rose-50::before{ content: '✕'; background: #E11D48; color: #fff; }
+
+/* rótulo + mensagem */
+#toast-msg{
+  font-size: 0.88rem;
+  line-height: 1.45;
+}
+#toast.bg-emerald-50 #toast-msg::before,
+#toast.bg-rose-50 #toast-msg::before{
+  display: block;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.64rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin-bottom: 3px;
+  opacity: 0.85;
+}
+#toast.bg-emerald-50 #toast-msg::before{ content: 'Sucesso'; color: #059669; }
+#toast.bg-rose-50 #toast-msg::before{ content: 'Erro'; color: #E11D48; }
