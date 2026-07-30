@@ -207,7 +207,20 @@
           <div class="field-group">
             <label class="field-label" for="reg-senha">Senha</label>
             <input class="input-padrao" type="password" id="reg-senha" placeholder="••••••••" required>
-          </div>
+            
+            <div class="pwd-strength" id="pwd-strength">
+              <div class="pwd-bar">
+                <span class="seg"></span><span class="seg"></span><span class="seg"></span><span class="seg"></span>
+              </div>
+              <div class="pwd-label" id="pwd-label">&nbsp;</div>
+              <ul class="pwd-checklist">
+                <li id="chk-tamanho">8+ caracteres</li>
+                <li id="chk-numero">Contém número</li>
+                <li id="chk-maiuscula" class="bonus">Maiúscula</li>
+                <li id="chk-simbolo" class="bonus">Símbolo</li>
+              </ul>
+            </div>
+            </div>
           <button type="submit" class="btn-success">Criar conta</button>
         </form>
       </div>

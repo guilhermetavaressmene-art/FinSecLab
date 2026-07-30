@@ -209,3 +209,63 @@ function logout() {
     DOM.loginForm.reset();
     DOM.registerForm.reset();
 }
+
+
+// Indicador de força de senha — apenas estética/UX no cadastro.
+// Regras obrigatórias espelham EXATAMENTE validar_senha() do services_usuario.py
+const regSenhaInput = document.getElementById('reg-senha');
+
+if (regSenhaInput) {
+    regSenhaInput.addEventListener('input', () => {
+        const senha = regSenhaInput.value;
+
+        const criterios = {
+            tamanho: senha.length >= 8,
+            numero: /\d/.test(senha)
+        };
+        const bonus = {
+            maiuscula: /[A-Z]/.test(senha),
+            simbolo: /[^A-Za-z0-9]/.test(senha)
+        };
+
+        atualizarChecklist('chk-tamanho', criterios.tamanho);
+        atualizarChecklist('chk-numero', criterios.numero);
+        atualizarChecklist('chk-maiuscula', bonus.maiuscula);
+        atualizarChecklist('chk-simbolo', bonus.simbolo);
+
+        const score = Object.values(criterios).filter(Boolean).length
+                    + Object.values(bonus).filter(Boolean).length;
+
+        atualizarBarraForca(score, senha.length);
+    });
+}
+
+function atualizarChecklist(id, cumprido) {
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.classList.toggle('ok', cumprido); // classList, nunca innerHTML
+}
+
+function atualizarBarraForca(score, tamanho) {
+    const barra = document.querySelector('.pwd-bar');
+    const label = document.getElementById('pwd-label');
+    if (!barra || !label) return;
+
+    barra.className = 'pwd-bar';
+    label.className = 'pwd-label';
+
+    if (tamanho === 0) {
+        label.textContent = '\u00A0';
+        return;
+    }
+
+    if (score <= 1) {
+        barra.classList.add('score-1'); label.classList.add('label-weak'); label.textContent = 'Fraca';
+    } else if (score === 2) {
+        barra.classList.add('score-2'); label.classList.add('label-ok'); label.textContent = 'Razoável';
+    } else if (score === 3) {
+        barra.classList.add('score-3'); label.classList.add('label-good'); label.textContent = 'Boa';
+    } else {
+        barra.classList.add('score-4'); label.classList.add('label-strong'); label.textContent = 'Forte';
+    }
+}
