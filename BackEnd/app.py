@@ -9,7 +9,7 @@ from flask import Flask, jsonify, request
 from flask_cors import CORS
 
 load_dotenv()
-app = Flask(__name__, static_folder='../FrontEnd', static_url_path='')
+app = Flask(__name__, static_folder='../FrontEnd/templates', static_url_path='')
 CORS(app)
 app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')
 
@@ -47,7 +47,7 @@ def token_obrigatorio(funcao):
 
 @app.route('/', methods=['GET'])
 def home():
-    return send_from_directory('../FrontEnd', 'index.html')
+    return send_from_directory('../FrontEnd/templates', 'index.html')
 
 @app.route('/finseclab', methods=['GET'])
 def inicio():
