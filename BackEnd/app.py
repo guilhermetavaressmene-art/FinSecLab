@@ -1,4 +1,4 @@
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify, request, send_from_directory
 from dotenv import load_dotenv
 from functools import wraps
 import jwt
@@ -9,7 +9,7 @@ from flask import Flask, jsonify, request
 from flask_cors import CORS
 
 load_dotenv()
-app = Flask(__name__)
+app = Flask(__name__, static_folder='../FrontEnd', static_url_path='')
 CORS(app)
 app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')
 
@@ -44,6 +44,10 @@ def token_obrigatorio(funcao):
         return funcao(id_usuario_logado, *args, **kwargs)
 
     return decorated
+
+@app.route('/', methods=['GET'])
+def home():
+    return send_from_directory('../FrontEnd', 'index.html')
 
 @app.route('/finseclab', methods=['GET'])
 def inicio():
