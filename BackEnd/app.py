@@ -17,7 +17,6 @@ CORS(app)
 
 app.config['SECRET_KEY'] = os.getenv('SECRET_KEY', 'chave_secreta_de_emergencia_123')
 
-
 database.tabela_usuarios()
 database.tabela_transacoes()
 
@@ -103,7 +102,7 @@ def login():
         }
         token_criptografado = jwt.encode(payload, app.config['SECRET_KEY'], algorithm="HS256")
 
-        # FIX: Se o PythonAnywhere gerar em Bytes, converte para String!
+        # FIX: Bytes -> String
         if isinstance(token_criptografado, bytes):
             token_criptografado = token_criptografado.decode('utf-8')
 
